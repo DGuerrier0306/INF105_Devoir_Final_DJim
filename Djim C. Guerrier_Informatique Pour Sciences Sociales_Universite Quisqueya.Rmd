@@ -1,0 +1,81 @@
+---
+title: "Informatique pour Sciences Sociales_Devoir Final_UNIQ"
+author: "Djim C. Guerrier   Code: GU140127"
+date: "`25 Mars 2023`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# 1. Courte introduction expliquant pourquoi il est important d'identifier les déterminants de l'indicateur d'intérêt
+
+La variable d'interet est l'Exportation de biens et de services (En Dollar US courant).
+
+Il est important d'identifier les déterminants de l'exportation d'un pays car cela peut aider les gouvernements et les entreprises à prendre des décisions éclairées sur les politiques économiques et commerciales. En comprenant les facteurs qui affectent les exportations, les décideurs peuvent élaborer des politiques visant à améliorer la compétitivité des entreprises exportatrices, à renforcer les relations commerciales avec les partenaires commerciaux clés, à diversifier les exportations et à élargir leurs marchés d'exportation.
+
+De plus, les exportations peuvent avoir un impact important sur la croissance économique et le développement d'un pays, surtout pour les économies en développement qui dépendent souvent des exportations pour accéder aux marchés internationaux afin d'accroître leurs revenus. Identifier les déterminants des exportations peut donc aider à stimuler la croissance économique et la création d'emplois dans les pays exportateurs.
+
+```{r}
+library(wbstats)
+```
+
+```{r}
+HT_data <- wbstats::wb_data(indicator = c("NE.EXP.GNFS.CD", "NY.GDP.MKTP.CD", "FP.CPI.TOTL.ZG", "SP.POP.GROW"),country = "Haiti", start = 1988, end = 2022)
+  
+
+#(WDI(country = "HT", indicator = c("NE.EXP.GNFS.CD", "NY.GDP.MKTP.CD", "FP.CPI.TOTL.ZG", "SP.POP.GROW"), start = 1988, end = 2022))
+
+names(HT_data)=c("Haiti","HT","HTI","Year","Exports","GDP","CPI","Population.Growth")
+Frame_HT_Data <- data.frame(HT_data[,-c(1:3)]) #Ici on porte les donnees des variables dans un dataframe puis on enleve les 3 premieres colonnes puisqu'elles contiennent des informations non-importantes
+Frame_HT_Data
+View(Frame_HT_Data) #Afin de verifier que tout est en ordre
+```
+```{r}
+# Charger le package pour réaliser la régression linéaire
+library(stats)
+```
+```{r}
+# Création du graphe pour chaque variable indépendante
+par(mfrow = c(2, 2)) # Diviser la zone de graphique en 4 parties
+for(i in 3:5) {
+  plot(Frame_HT_Data[, i], Frame_HT_Data[, 1], main = colnames(Frame_HT_Data)[i], xlab = colnames(Frame_HT_Data)[i], ylab = "Exports")
+  abline(lm(Frame_HT_Data[, 1] ~ Frame_HT_Data[, i]), col = "red")
+}  
+#Dans le code precedent, on a utilise une boucle afin d'eviter a avoir a ecrire la meme ligne pour chaque variable individuellement
+```
+```{r}
+# Régression de la variable dépendante sur les variables indépendantes
+model=lm(Exports~GDP+CPI+Population.Growth, data = Frame_HT_Data)
+summary(model)
+```
+```{r}
+# Création d'un dataframe pour les résultats de la régression du modele
+summary_df <- data.frame(coefficients = coef(model), p_values = summary(model)$coefficients[, 4])
+
+summary_df$coefficients[1] <- NA # On retire le coefficient pour la constante
+summary_df$statistic <- c(summary(model)$r.squared, summary(model)$fstatistic[1])
+colnames(summary_df)[2] <- "Fisher"
+summary_df$p_values[4] <- NA # On retire le p-value pour la statistique de Fisher
+summary_df$R2_adj <- summary(model)$adj.r.squared
+rownames(summary_df)[1] <- "Exports"
+rownames(summary_df)[2] <- "GDP"
+rownames(summary_df)[3] <- "CPI"
+rownames(summary_df)[4] <- "Population.Growth"
+
+summary_df
+```
+```{r}
+# Création d'un graphique pour les valeurs résiduelles et les valeurs estimées
+
+{plot(model$fitted.values, model$residuals, main = "Valeurs résiduelles et estimées", xlab = "Valeurs estimées", ylab = "Valeurs résiduelles")
+abline(h = 0, col = "red")}
+```
+
+
+```
+
+# 2. Commentaire sur le graphique en nuage de points, mettant en lien les valeurs résiduelles (erreurs) de la régression et les valeurs estimées (fitted values)
+
+dans le graphique,le schema formé par la dispersion des points accuse d'une répartition plus ou moins équilibrée des valeurs résiduelle en fonction des valeurs estimées des deux coté de la ligne de zéro (sauf une seule valeur aberrante- en haut a droite), et ne présente aucune forme identifiable. Ces observations nous indiquent que le modele est plus ou moins solide et satisfait pas les hypotheses de loi normale et de la constance de la variance des erreurs.
+
