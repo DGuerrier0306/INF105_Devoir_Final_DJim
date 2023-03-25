@@ -77,5 +77,5 @@ abline(h = 0, col = "red")}
 
 # 2. Commentaire sur le graphique en nuage de points, mettant en lien les valeurs résiduelles (erreurs) de la régression et les valeurs estimées (fitted values)
 
-dans le graphique,le schema formé par la dispersion des points accuse d'une répartition plus ou moins équilibrée des valeurs résiduelle en fonction des valeurs estimées des deux coté de la ligne de zéro (sauf une seule valeur aberrante- en haut a droite), et ne présente aucune forme identifiable. Ces observations nous indiquent que le modele est plus ou moins solide et satisfait pas les hypotheses de loi normale et de la constance de la variance des erreurs.
+dans le graphique,le schema formé par la dispersion des points accuse d'une répartition plus ou moins équilibrée des valeurs résiduelle en fonction des valeurs estimées des deux coté de la ligne de zéro (sauf une seule valeur aberrante- en haut a droite), et ne présente aucune forme identifiable. Ces observations nous indiquent que le modele est plus ou moins solide et satisfait les hypotheses de loi normale et de la constance de la variance des erreurs.
 
